@@ -1,6 +1,7 @@
 # RatProject: Eğitim Amaçlı Android Yönetim Aracı
 
-![Kontrol Paneli](https://i.imgur.com/your-screenshot-url.png) <!-- Projenizin bir ekran görüntüsünü buraya ekleyebilirsiniz -->
+![image](https://github.com/user-attachments/assets/288003db-6fff-467a-94ef-99525485adda)
+
 
 Bu proje, Python (Flask) tabanlı bir sunucu ve yerel bir Android istemcisinden oluşan, **tamamen eğitim amaçlı** bir Uzaktan Yönetim Aracıdır (RAT). Proje, ağ programlama, Android servisleri, web soketleri ve istemci-sunucu mimarisi gibi konuları öğrenmek için pratik bir ortam sunar.
 
