@@ -44,7 +44,7 @@ Bu yazılım **sadece eğitim ve araştırma amaçlıdır**.
    - **Gerçek Zamanlı İletişim**: Socket.IO Client
    - **API İletişimi**: Fetch API
 - **İstemci (Client)**:
-   - **Platform**: Android (Min SDK 24 - Android 7.0)
+   - **Platform**: Android (Min SDK 24 - Android 14.0)
    - **Dil**: Java/Kotlin
    - **Gerçek Zamanlı İletişim**: Socket.IO Client for Java
    - **Arka Plan İşlemleri**: Android Services
