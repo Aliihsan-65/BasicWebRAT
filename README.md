@@ -20,7 +20,7 @@ Bu yazılım **sadece eğitim ve araştırma amaçlıdır**.
 
 ---
 
-## ✨ Temel Özellikler
+##  Temel Özellikler
 
 - **Modern Web Kontrol Paneli**: Bağlı cihazları yönetmek için duyarlı ve gerçek zamanlı web arayüzü.
 - **Gerçek Zamanlı İletişim**: Sunucu, web paneli ve Android istemcileri arasında düşük gecikmeli iletişim için **Flask-SocketIO**.
@@ -34,7 +34,7 @@ Bu yazılım **sadece eğitim ve araştırma amaçlıdır**.
 
 ---
 
-## 🚀 Yeni Özellikler
+## Yeni Özellikler
 
 - **WhatsApp Arayüzü Eklendi**: WhatsApp mesajlarını okuma ve gönderme yeteneği eklendi.
 - **Bildirim Erişimi**: Cihazdaki bildirimleri okuma ve yönetme özelliği eklendi.
@@ -44,7 +44,7 @@ Bu yazılım **sadece eğitim ve araştırma amaçlıdır**.
 
 ---
 
-## 🛠️ Teknoloji Mimarisi
+## Teknoloji Mimarisi
 
 - **Sunucu (Backend)**:
    - **Framework**: Flask
@@ -63,7 +63,7 @@ Bu yazılım **sadece eğitim ve araştırma amaçlıdır**.
 
 ---
 
-## 🚀 Kurulum ve Başlatma
+##  Kurulum ve Başlatma
 
 ### Ön Gereksinimler
 - [Python 3.8+](https://www.python.org/downloads/)
@@ -129,7 +129,7 @@ Android uygulaması, sunucuya bağlanacak ve komutları yerine getirecektir.
 
 ---
 
-## 💻 Kullanım
+##  Kullanım
 
 1.  **Sunucunun çalıştığından emin olun.**
 2.  **Android uygulamayı hedef cihaza yükleyip çalıştırın.** Uygulama başlatıldığında arka plan servisi de başlayacak ve sunucuya bağlanacaktır.
