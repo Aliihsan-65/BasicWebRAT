@@ -152,4 +152,4 @@ def send_command():
 
 if __name__ == '__main__':
     print("RAT Server starting on port 8080...")
-    socketio.run(app, host='0.0.0.0', port=8080, debug=True)
+    socketio.run(app, host='0.0.0.0', port=8080, debug=True, allow_unsafe_werkzeug=True)

